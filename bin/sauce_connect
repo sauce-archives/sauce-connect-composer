@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-require_once dirname(__FILE__).'/../src/Sauce/Sausage/SauceConfig.php';
+require_once dirname(__FILE__).'/../../../autoload.php';
 
 use Sauce\Sausage\SauceConfig;
 
