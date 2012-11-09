@@ -27,4 +27,11 @@ Or on Windows:
 
     vendor\bin\sauce_connect.bat
 
-Run that and you'll be testing against your local test server in no time!
+The script will start up the Sauce Connect Java binary behind the scenes. As
+it's starting you'll see various messages letting you know the status of the
+startup process (it usually takes about a minute). Once Sauce Connect is ready
+to go, you'll get a prompt that allows you to hit enter to see more log
+messages from the running Sauce Connect binary, or type 'q' and hit enter to
+shut down the secure tunnel.
+
+You'll be testing against your local test server in no time!
