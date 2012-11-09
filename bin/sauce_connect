@@ -26,8 +26,11 @@ $process = proc_open($cmd, array(array("pipe", "r"), array("pipe", "w"), array("
 stream_set_blocking($pipes[1], 0);
 stream_set_blocking($pipes[2], 0);
 $status = proc_get_status($process);
+$is_terminating = false;
+echo "Starting Sauce connect!\n";
 
 while ($status['running']) {
+    $status = proc_get_status($process);
     $out_streams = array($pipes[1], $pipes[2]);
     $e = NULL; $f = NULL;
     $num_changed = stream_select($out_streams, $e, $f, 0, 20000);
@@ -36,11 +39,17 @@ while ($status['running']) {
             echo stream_get_contents($changed_stream);
         }
     }
-    $status = proc_get_status($process);
+    if (!$is_terminating) {
+        echo "\nPress any key to see more output, or q to shutdown: ";
+        $in = fgets(STDIN);
+        if (trim($in) == "q") {
+            proc_terminate($process, 2);
+            $is_terminating = true;
+        }
+    }
 }
 
 fclose($pipes[0]);
 fclose($pipes[1]);
 fclose($pipes[2]);
 proc_close($process);
-
