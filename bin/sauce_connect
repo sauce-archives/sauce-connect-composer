@@ -27,7 +27,10 @@ stream_set_blocking($pipes[1], 0);
 stream_set_blocking($pipes[2], 0);
 $status = proc_get_status($process);
 $is_terminating = false;
-echo "Starting Sauce connect!\n";
+$has_connected = false;
+$connect_msg_shown = false;
+$all_output = '';
+echo "Starting Sauce connect...\n";
 
 while ($status['running']) {
     $status = proc_get_status($process);
@@ -36,13 +39,23 @@ while ($status['running']) {
     $num_changed = stream_select($out_streams, $e, $f, 0, 20000);
     if ($num_changed) {
         foreach ($out_streams as $changed_stream) {
-            echo stream_get_contents($changed_stream);
+            $out = stream_get_contents($changed_stream);
+            echo $out;
+            $all_output .= $out;
         }
     }
-    if (!$is_terminating) {
+    if (stripos($all_output, "Connected! You may start your tests") !== false)
+        $has_connected = true;
+
+    if ($has_connected && !$connect_msg_shown) {
+        echo "\nSauce Connect is running!";
+        $connect_msg_shown = true;
+    }
+
+    if ($has_connected && !$is_terminating) {
         echo "\nPress any key to see more output, or q to shutdown: ";
         $in = fgets(STDIN);
-        if (trim($in) == "q") {
+        if (strtolower(trim($in)) == "q") {
             proc_terminate($process, 2);
             $is_terminating = true;
         }
